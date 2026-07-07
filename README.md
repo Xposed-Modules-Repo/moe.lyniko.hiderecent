@@ -1,19 +1,23 @@
 # Hide App from Recent Task List
 
-Simple module to hide any app from recent task list.
+**!!!LSPosed IS REQUIRED TO USE THIS MODULE!!!**
 
-Designed in pure Kotlin & Jetpack Compose & Material Design 3. Can be a template for any Xposed module with a application selection list.
+**你需要先安装 LSPosed 才能使用这个模块！！！**
+
+Simple module to hide apps from the recent task list, or keep them visible while hiding their preview snapshots.
+
+Designed with Kotlin, Jetpack Compose and Material Design 3. Can also serve as a template for any Xposed module with an application selection list.
 
 ![UI Screenshot](https://github.com/Young-Lord/hideRecent/raw/master/assets/image/preview.jpg)
 
 ## How to use
 
-> Tested on: Android 10 (AOSP),  Android 11 (MIUI 12), Android 13 (AOSP), Android 13 (MIUI 14), Android 14 (AOSP); may work on [10 <= Android <= 14](http://aospxref.com/android-10.0.0_r47/xref/frameworks/base/services/core/java/com/android/server/wm/RecentTasks.java#1272)
+> Tested on: Android 10 ~ 16.
 
 1. Select `System framework` (package name may be `android` or `system` or empty, [see this](https://github.com/LSPosed/LSPosed/releases/tag/v1.9.1)) in module scope and activate the module
-2. Force stop module
-3. Select the apps you want to hide from recent app list in module settings (if package list not shown, you can manually import / export settings to edit config)
-4. Reboot (you MUST reboot when you modify the list, or changes will not be applied until next reboot)
+2. Force stop the module
+3. Set a mode for each app in module settings: `/`, `Hide task`, or `Hide preview` (if the package list is not shown, you can manually import / export settings to edit config)
+4. Reboot the device (you MUST reboot the device after modifying the list or the hide mode, otherwise the changes will not take effect)
 5. If you need multi-user support, install this module only in main user, and use [Shizuku](https://shizuku.rikka.app/download/) to get app info from other users.
 
 ## Module Scope
@@ -30,19 +34,19 @@ Xposed Modules Repo URL: <https://github.com/Xposed-Modules-Repo/moe.lyniko.hide
 
 UI: Material Design 3 + Jetpack Compose + Kotlin.
 
-Hook: Hook `com.android.server.wm.RecentTasks.isVisibleRecentTask(com.android.server.wm.Task)`, `(callMethod(param.args[0], "getBaseIntent") as Intent).component?.packageName` is package name.
+Hook: Hook `com.android.server.wm.RecentTasks.isVisibleRecentTask(com.android.server.wm.Task)` and `com.android.server.wm.RecentTasks.isVisibleRecentTask(com.android.server.wm.Task, boolean)` for apps set to `Hide task`. The two-arg overload is used directly by Vivo and some other OEM ROMs.
+
+For apps set to `Hide preview`, hook `com.android.server.wm.TaskSnapshotController.getSnapshotMode(com.android.server.wm.Task)`, `com.android.server.wm.AbsAppSnapshotController.getSnapshotMode(com.android.server.wm.Task)` (parent class on some ROMs), and `com.android.server.wm.ActivityRecord.shouldUseAppThemeSnapshot()` so selected apps use an app-theme task snapshot instead of a real screenshot. `com.android.server.wm.Task.getSnapshot(boolean, boolean)` is also hooked to avoid returning previously cached real snapshots.
 
 ## HELP ME IT DOESNT WORK!!!
 
-Please open a issue [here](https://github.com/Young-Lord/hideRecent/issues). Provide your Android version, `/system/framework/framework.jar` and all `/system/framework/framework{a number here}.jar` if exist.
-
-I am not intended to support Android < 10, but anyone is free to [send a PR](https://github.com/Young-Lord/hideRecent/pulls) for Android < 10 support.
+Please open an issue [here](https://github.com/Young-Lord/hideRecent/issues). Provide your Android version, `/system/framework/framework.jar`, `/system/framework/services.jar` and all `/system/framework/framework{a number here}.jar` if they exist.
 
 PR for refactoring is also appreciated.
 
 ## License
 
-Apache-2.0 License or MIT License are all OK.
+Apache-2.0 License or MIT License are fine.
 
 ## Thanks
 
